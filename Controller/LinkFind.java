@@ -5,14 +5,17 @@ import org.jsoup.select.Elements;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Stack;
 
 public class LinkFind {
+    public static String TheLink = "https://www.coindesk.com";
     public static void main(String[] args) {
-        String homepageURL = "https://vnexpress.net"; // Website mục tiêu (Sau sẽ đổi sang input dạng .txt)
-        String outputFile = "Data/Url.txt"; // Tên file xuất ra
+        String homepageURL = TheLink; // Website mục tiêu (Sau sẽ đổi sang input dạng .txt)
+        String outputFile = "C:\\Users\\MY PC\\Downloads\\Java-Data-scraper-master\\Java-Data-scraper-master\\Data\\Url.txt"; // Tên file xuất ra
 
         try {
             Set<String> blockchainURLs = findURLs(homepageURL);
@@ -34,7 +37,7 @@ public class LinkFind {
         stack.push(homepageURL);
 
         // Tìm kiếm Url bằng DFS
-        while (!stack.isEmpty() && URLs.size() <= 10) {
+        while (!stack.isEmpty() && URLs.size() <= 20) {
             // Lấy Url đầu trong stack làm Url mục tiêu
             String currentURL = stack.pop();
 
@@ -43,24 +46,32 @@ public class LinkFind {
                 visited.add(currentURL);
 
                 // Giới hạn route của Url (<<<<<<<<<<<< Mày sửa chỗ này >>>>>>>>>>>>>>)
-                if (currentURL.equals("https://vnexpress.net") || (currentURL.startsWith("https://vnexpress.net/") && currentURL.length() >= 35)) { 
-                    URLs.add(currentURL); // Add the URL to the set of blockchain URLs
-                    
+                if (currentURL.equals(TheLink) || (currentURL.startsWith(TheLink) && currentURL.length() >= 60)) { 
+                    if (currentURL!=homepageURL){
+                        URLs.add(currentURL); // Add the URL to the set of blockchain URLs
+                    }
                     // Tạo kết nối HTTP đến Url mục tiêu
-                    Document doc = Jsoup.connect(currentURL).get();
+                    URL url = new URL(currentURL);
+                    HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+                    connection.setRequestMethod("GET");
+                    connection.connect();
 
-                    // Lấy các phần tử chứa tag <a href="">
-                    Elements links = doc.select("a[href]");
+                    int code = connection.getResponseCode();
+                    if (code>299) continue;
+                    else{ 
+                        Document doc = Jsoup.connect(currentURL).get();
+
+                        // Lấy các phần tử chứa tag <a href="">
+                        Elements links = doc.select("a[href]");
     
-                    for (Element link : links) {
-                        // Kiểm tra điều kiện của Url (<<<<<<<<<<<< Mày thêm bộ lọc chỗ này >>>>>>>>>>>>>>)
-
-
-                        // Lấy Root Url của phần tử
-                        String absUrl = link.absUrl("href");
-
-                        // Đẩy Root Url vào stack
-                        stack.push(absUrl);
+                        for (Element link : links) {
+                            // Kiểm tra điều kiện của Url (<<<<<<<<<<<< Mày thêm bộ lọc chỗ này >>>>>>>>>>>>>>)
+                            // Lấy Root Url của phần tử
+                            String absUrl = link.absUrl("href");
+                           if (absUrl.contains("/page")||absUrl.contains("/privacy")||absUrl.contains("/contact")||absUrl.contains("/about")||absUrl.contains("/cookie")||absUrl.contains("/tag")||absUrl.contains("/auth")||absUrl.contains("/adv")||absUrl.contains("/accessibility")||absUrl.contains("/policy")) continue;
+                            // Đẩy Root Url vào stack
+                           else stack.push(absUrl);
+                        }
                     }
                 }
             }

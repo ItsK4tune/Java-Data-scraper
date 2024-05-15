@@ -13,8 +13,8 @@ import java.util.List;
 
 public class Datascraper {
     public static void main(String[] args) {
-        String inputFilePath = "Data/Url.txt"; // Tên file nhập vào
-        String outputFilePath = "Data/Output.json"; // Tên file xuất ra
+        String inputFilePath = "C:\\Users\\MY PC\\Downloads\\Java-Data-scraper-master\\Java-Data-scraper-master\\Data\\Url.txt"; // Tên file nhập vào
+        String outputFilePath = "C:\\Users\\MY PC\\Downloads\\Java-Data-scraper-master\\Java-Data-scraper-master\\Data\\Output.json"; // Tên file xuất ra
         
         List<ScrapeData> dataList = new ArrayList<>();
         
@@ -25,18 +25,17 @@ public class Datascraper {
             String line;
             while ((line = reader.readLine()) != null) {
                 String url = line.trim(); // Lấy Url trên từng dòng
-                
                 // Tạo kết nối HTTP đến Url mục tiêu
                 Document doc = Jsoup.connect(url).get();
                 
                 // Lấy các phần tử cần thiết (<<<<<<<<<<<< Mày sửa chỗ này >>>>>>>>>>>>>>)
-                Elements web_url = doc.select("meta[property $= *|site_name]");
-                Elements type = doc.select("meta[property $= *|type]");
+                String web_url = url.substring(0, url.indexOf(".")+5);
+                Elements type = doc.select("meta[property $= og:type]");
                 Elements description = doc.select("meta[name = description]");
-                String title = doc.title();  
-                Elements contents = doc.select("div#maincontent p, article.fck_detail p");
-                Elements author = doc.body().select("[property = *|author]");
-                Elements create_date = doc.select(".date");
+                Elements title = doc.select("meta[property $=title]");  
+                Elements contents = doc.select("div#maincontent p, article.fck_detail p, section.at-body p");
+                Elements author = doc.select("meta[property $= author]");
+                Elements create_date = doc.select("meta[property $= published_time]");
                 Elements tag = doc.select("meta[property $= tag]");
                 
                 // Tạo đối tượng String lưu từng phần của content
@@ -46,7 +45,7 @@ public class Datascraper {
                     contentList.add(content.text());
                 
                 // Tạo đối tượng ScrapedData và đẩy vào dataList 
-                ScrapeData data = new ScrapeData(url, web_url.attr("content"), type.attr("content"), description.attr("content"), title,  contentList, author.attr("content"), create_date.text(), tag.attr("content"));
+                ScrapeData data = new ScrapeData(url, web_url, type.attr("content"), description.attr("content"), title.attr("content"),  contentList, create_date.attr("content"), tag.attr("content"), author.attr("content"));
                 dataList.add(data);
             }
             
