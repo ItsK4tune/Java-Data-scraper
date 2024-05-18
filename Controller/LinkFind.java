@@ -12,10 +12,10 @@ import java.util.Set;
 import java.util.Stack;
 
 public class LinkFind {
-    public static String TheLink = "https://www.coindesk.com";
+    public static String TheLink = "https://blockchain.news/";
     public static void main(String[] args) {
         String homepageURL = TheLink; // Website mục tiêu (Sau sẽ đổi sang input dạng .txt)
-        String outputFile = "C:\\Users\\MY PC\\Downloads\\Java-Data-scraper-master\\Java-Data-scraper-master\\Data\\Url.txt"; // Tên file xuất ra
+        String outputFile = "C:\\Users\\Administrator\\Pictures\\Java-Data-scraper-patched\\Java-Data-scraper-patched\\Data\\Url.txt"; // Tên file xuất ra
 
         try {
             Set<String> blockchainURLs = findURLs(homepageURL);
@@ -68,7 +68,7 @@ public class LinkFind {
                             // Kiểm tra điều kiện của Url (<<<<<<<<<<<< Mày thêm bộ lọc chỗ này >>>>>>>>>>>>>>)
                             // Lấy Root Url của phần tử
                             String absUrl = link.absUrl("href");
-                           if (absUrl.contains("/page")||absUrl.contains("/privacy")||absUrl.contains("/contact")||absUrl.contains("/about")||absUrl.contains("/cookie")||absUrl.contains("/tag")||absUrl.contains("/auth")||absUrl.contains("/adv")||absUrl.contains("/accessibility")||absUrl.contains("/policy")) continue;
+                           if (absUrl.contains("/page")||absUrl.contains("/privacy")||absUrl.contains("/contact")||absUrl.contains("/about")||absUrl.contains("/cookie")||absUrl.contains("/tag")||absUrl.contains("/auth")||absUrl.contains("/adv")||absUrl.contains("/accessibility")||absUrl.contains("/policy")||absUrl.contains("#")) continue;
                             // Đẩy Root Url vào stack
                            else stack.push(absUrl);
                         }
