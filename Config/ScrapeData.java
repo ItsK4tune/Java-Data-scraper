@@ -1,4 +1,3 @@
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +13,7 @@ public class ScrapeData{
     private String type;
     private String description;
     private String title;
-    private List<String> content;
+    private String content;
     private String create_date;
     private String tag;
     private String author;
